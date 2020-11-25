@@ -1,5 +1,5 @@
 {
    name: 'Ira',
    age: 24,
-   gender: female
+   gender: 'female'
 }

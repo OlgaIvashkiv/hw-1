@@ -1,5 +1,5 @@
 {
    name: 'Ivan',
    age: 25,
-   gender: male
+   gender: 'male'
 }
