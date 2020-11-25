@@ -1,7 +1,0 @@
-const user = {
-   name: 'Ira',
-   age: 24,
-   gender: female
-}
-
-module.exports = {user}
