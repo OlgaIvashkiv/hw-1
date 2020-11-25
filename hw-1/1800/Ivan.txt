@@ -1,0 +1,7 @@
+const user = {
+   name: 'Ivan',
+   age: 25,
+   gender: male
+}
+
+module.exports = {user}
