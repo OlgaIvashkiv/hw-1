@@ -1,6 +1,1 @@
-[{
-    "name": "Olga",
-    "surname": "Ivashkiv",
-    "password": "12345",
-    "email": "olgasworking@gmail.com"
-}]
+[{"name":"Olga","surname":"Ivashkiv","password":"12345","email":"olgasworking@gmail.com"},{"name":"Julia","surname":"Kyrsa","email":"julia.ivashkiv@gmail.com","password":"1111"}]
