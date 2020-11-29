@@ -33,7 +33,8 @@ app.post('/registration', ((req, res) => {
         fs.readFile(usersArrayPath, ((err, data) => {
 
                 if (err) {
-                    console.log('Cannot read file');
+                    errorMessage = 'Could not read DB file. Please сheck the code.';
+                    res.render('error');
                     return
                 }
 
@@ -44,7 +45,10 @@ app.post('/registration', ((req, res) => {
                     users.push(req.body);
                     fs.writeFile(usersArrayPath, JSON.stringify(users), (err1) => {
 
-                        if (err1) console.log(err1);
+                        if (err1) {
+                            errorMessage = 'Could not write DB file. Please сheck the code.';
+                            res.render('error');
+                        }
                     });
 
                     isLogged = true;
@@ -69,7 +73,8 @@ app.post('/login', ((req, res) => {
     fs.readFile(usersArrayPath, (err, data) => {
 
         if (err) {
-            console.log('Cannot read file');
+            errorMessage = 'Could not read DB file. Please сheck the code.';
+            res.render('error');
             return
         }
 
@@ -99,7 +104,8 @@ app.get('/users', (req, res) => {
     fs.readFile(usersArrayPath, (err, data) => {
 
         if (err) {
-            console.log('Cannot read file');
+            errorMessage = 'Could not read DB file. Please сheck the code.';
+            res.render('error');
             return
         }
 
