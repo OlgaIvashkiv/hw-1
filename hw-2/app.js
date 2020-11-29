@@ -18,7 +18,7 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 
 //flags
 let isLogged = false;
-let errorMessage = '';
+let errorMessage = 'Please try again.';
 
 app.get('/', (req, res) => {
     res.render('main');
@@ -31,17 +31,27 @@ app.post('/registration', ((req, res) => {
         const { name, surname, password, email } = req.body;
 
         fs.readFile(usersArrayPath, ((err, data) => {
+
+                if (err) {
+                    console.log('Cannot read file');
+                    return
+                }
+
                 const users = JSON.parse(data.toString());
                 const findUser = users.find((user) => user.email === email);
+
                 if (!findUser) {
                     users.push(req.body);
                     fs.writeFile(usersArrayPath, JSON.stringify(users), (err1) => {
+
                         if (err1) console.log(err1);
                     });
+
                     isLogged = true;
                     res.redirect('/users');
                     return;
                 }
+
                 errorMessage = 'This user is already registered. Please Login.';
                 res.redirect('/error');
             }
@@ -52,20 +62,26 @@ app.post('/registration', ((req, res) => {
 app.get('/login', (req, res) => {
     res.render('login');
 });
+
 app.post('/login', ((req, res) => {
     const { email, password } = req.body;
+
     fs.readFile(usersArrayPath, (err, data) => {
+
         if (err) {
             console.log('Cannot read file');
             return
         }
+
         const users = JSON.parse(data.toString());
         const user = users.find(el => el.email === email && el.password === password);
+
         if (!user) {
             errorMessage = 'Password or email is incorrect. \n Please try again or register';
             res.redirect('/error');
             return
         }
+
         isLogged = true;
         res.redirect('/users');
 
@@ -74,15 +90,19 @@ app.post('/login', ((req, res) => {
 }))
 
 app.get('/users', (req, res) => {
+
     if (!isLogged) {
         errorMessage = 'Please login';
         res.redirect('/error');
     }
+
     fs.readFile(usersArrayPath, (err, data) => {
+
         if (err) {
             console.log('Cannot read file');
             return
         }
+
         const users = JSON.parse(data.toString());
         res.render('users', { users })
     })
