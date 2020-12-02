@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const exprsHbs = require('express-handlebars');
 
-const usersArrayPath = path.join(process.cwd(), 'users-list.json');
+const usersArrayPath = path.join(process.cwd(), 'users-list.js');
 
 const app = express();
 
