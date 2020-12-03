@@ -6,10 +6,10 @@ const userRouter = Router();
 
 userRouter.get('/', userController.getAllUsers);
 
-userRouter.post('/', userMiddleware.checkIfUserIsInDB, userController.createUser);
+userRouter.post('/', userMiddleware.checkUserValidity, userMiddleware.checkIfUserIsInDB, userController.createUser);
 
-userRouter.get('/:email', userMiddleware.checkUserEmail, userController.getUserByEmail);
+userRouter.get('/:age', userController.getUsersOfAge);
 
-userRouter.delete('/:email', userMiddleware.checkUserEmail, userController.deleteUserByEmail);
+userRouter.delete('/:id', userMiddleware.checkIdValidity, userController.deleteUserById);
 
 module.exports = userRouter;

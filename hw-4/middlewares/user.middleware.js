@@ -1,29 +1,46 @@
-const dataBase = require('../dataBase').getInstance();
+const dataBase = require('../dataBase')
+    .getInstance();
 
 module.exports = {
     checkIfUserIsInDB: (req, res, next) => {
         try {
             const { email } = req.body;
-            const findUser = dataBase.find((user) => user.email === email);
+            const UserModel = dataBase.getModel('User');
+            const findUser = UserModel.findAll({
+                where: {
+                    email
+                }
+            });
 
-            if (findUser) throw new Error('This user is already registered.');
+            if (!findUser) throw new Error('This user is already registered.');
 
             req.user = email;
             next();
         } catch (e) {
-            res.status(400).json(e.message);
+            res.status(400)
+                .json(e.message);
         }
     },
-    checkUserEmail: (req, res, next) => {
+    checkUserValidity: (req, res, next) => {
         try {
-            const { email } = req.params;
-            const findUser = dataBase.find((user) => user.email === email);
-
-            if (!findUser) throw new Error('No such email found in DB.');
-
+            const { age, email, password } = req.body;
+            if (age < 13 || email.length < 8 || password.length < 6) {
+                throw new Error('This user data is not valid');
+            }
             next();
         } catch (e) {
             res.json(e.message);
         }
     },
+    checkIdValidity: (req, res, next) => {
+        try {
+            const { id } = req.params;
+
+            if (id <= 0 || !typeof (Number)) throw new Error('ID must be type of number and greater than 0.');
+
+            next();
+        } catch (e) {
+            res.json(e.message);
+        }
+    }
 };
