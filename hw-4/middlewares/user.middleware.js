@@ -42,5 +42,21 @@ module.exports = {
         } catch (e) {
             res.json(e.message);
         }
+    },
+    checkDataValidity: (req, res, next) => {
+        try {
+            const { age, email, password } = req.body;
+
+            if (age && age < 13) throw new Error('This updated data is not valid');
+
+            if (email && email.length < 8) throw new Error('This updated data is not valid');
+
+            if (password && password.length < 6) throw new Error('This updated data is not valid');
+
+            next();
+        } catch (e) {
+            res.json(e.message);
+        }
     }
+
 };

@@ -1,4 +1,3 @@
-// const { Op } = require('sequelize');
 const db = require('../dataBase').getInstance();
 
 module.exports = {
@@ -20,7 +19,15 @@ module.exports = {
     },
     deleteUserById: (id) => {
         const UserModel = db.getModel('User');
-        return UserModel.destroy({
+        return UserModel.destroy({ name: 'Olia' }, {
+            where: {
+                id
+            }
+        });
+    },
+    updateUserById: (updatedData, id) => {
+        const UserModel = db.getModel('User');
+        return UserModel.update(updatedData, {
             where: {
                 id
             }

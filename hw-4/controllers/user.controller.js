@@ -39,5 +39,17 @@ module.exports = {
         } catch (e) {
             res.status(404).json(e.message);
         }
+    },
+    updateUserById: async (req, res) => {
+        try {
+            await userService.updateUserById(req.body, req.params.id);
+
+            res.status(200).json({
+                data: req.body,
+                message: 'Updated info'
+            });
+        } catch (e) {
+            res.status(404).json(e.message);
+        }
     }
 };

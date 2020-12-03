@@ -12,4 +12,6 @@ userRouter.get('/:age', userController.getUsersOfAge);
 
 userRouter.delete('/:id', userMiddleware.checkIdValidity, userController.deleteUserById);
 
+userRouter.put('/:id', userMiddleware.checkIdValidity, userMiddleware.checkDataValidity, userController.updateUserById);
+
 module.exports = userRouter;
