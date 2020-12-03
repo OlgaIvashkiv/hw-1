@@ -8,6 +8,7 @@ module.exports = {
 
             if (findUser) throw new Error('This user is already registered.');
 
+            req.user = email;
             next();
         } catch (e) {
             res.status(400).json(e.message);

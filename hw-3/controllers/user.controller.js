@@ -3,9 +3,11 @@ const { userService } = require('../services');
 module.exports = {
     createUser: (req, res) => {
         try {
-            userService.addUserToDB(req.body);
+            const user = req.body;
 
-            res.status(201).json('User created');
+            userService.addUserToDB(user);
+
+            res.status(201).json(user);
         } catch (e) {
             res.status(400).json(e.message);
         }
@@ -13,9 +15,9 @@ module.exports = {
 
     getAllUsers: (req, res) => {
         try {
-            userService.findAllUsers();
+            const allUsers = userService.findAllUsers();
 
-            res.status(200).json('all users');
+            res.status(200).json(allUsers);
         } catch (e) {
             res.status(400).json(e.message);
         }
@@ -23,18 +25,18 @@ module.exports = {
 
     getUserByEmail: (req, res) => {
         try {
-            userService.findUserByEmail(req.params);
+            const userByEmail = userService.findUserByEmail(req.params);
 
-            res.status(200).json('User found');
+            res.status(200).json(userByEmail);
         } catch (e) {
             res.status(404).json(e.message);
         }
     },
     deleteUserByEmail: (req, res) => {
         try {
-            userService.deleteUserByEmail(req.params);
+            const deletedUser = userService.deleteUserByEmail(req.params);
 
-            res.status(200).json('User deleted');
+            res.status(200).json(deletedUser);
         } catch (e) {
             res.status(404).json(e.message);
         }

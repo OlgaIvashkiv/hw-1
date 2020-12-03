@@ -11,4 +11,4 @@ const { userRouter } = require('./routes');
 
 app.use('/users', userRouter);
 
-app.listen(5000, () => console.log('Server is UP'));
+app.listen(5000, () => console.log('Server is UP on localhost: 5000'));
