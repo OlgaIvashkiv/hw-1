@@ -22,11 +22,24 @@ module.exports = {
             res.status(400).json(e.message);
         }
     },
+    findUserById: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const findUser = await userService.findUserById(id);
+
+            res.status(200).json(findUser);
+        } catch (e) {
+            res.status(400).json(e.message);
+        }
+    },
     deleteUserById: async (req, res) => {
         try {
             await userService.deleteUserById(req.params.id);
 
-            res.status(200).json('User is deleted');
+            res.status(200).json({
+                data: req.body,
+                message: 'User is deleted'
+            });
         } catch (e) {
             res.status(404).json(e.message);
         }
@@ -51,5 +64,6 @@ module.exports = {
         } catch (e) {
             res.status(404).json(e.message);
         }
-    }
+    },
+
 };

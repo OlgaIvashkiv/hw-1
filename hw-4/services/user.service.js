@@ -1,6 +1,10 @@
 const db = require('../dataBase').getInstance();
 
 module.exports = {
+    findUserById: (id) => {
+        const UserModel = db.getModel('User');
+        return UserModel.findByPk(id);
+    },
     findAllUsers: () => {
         const UserModel = db.getModel('User');
         return UserModel.findAll();
@@ -19,7 +23,7 @@ module.exports = {
     },
     deleteUserById: (id) => {
         const UserModel = db.getModel('User');
-        return UserModel.destroy({ name: 'Olia' }, {
+        return UserModel.destroy({
             where: {
                 id
             }

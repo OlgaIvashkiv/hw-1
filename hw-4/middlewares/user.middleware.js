@@ -1,18 +1,17 @@
-const dataBase = require('../dataBase')
-    .getInstance();
+const db = require('../dataBase').getInstance();
 
 module.exports = {
-    checkIfUserIsInDB: (req, res, next) => {
+    findUserByEmail: (req, res, next) => {
         try {
             const { email } = req.body;
-            const UserModel = dataBase.getModel('User');
+            const UserModel = db.getModel('User');
             const findUser = UserModel.findAll({
                 where: {
                     email
                 }
             });
 
-            if (!findUser) throw new Error('This user is already registered.');
+            if (findUser) throw new Error('This user is already registered.');
 
             req.user = email;
             next();
@@ -47,16 +46,49 @@ module.exports = {
         try {
             const { age, email, password } = req.body;
 
-            if (age && age < 13) throw new Error('This updated data is not valid');
+            if (age && age < 13) throw new Error('This data is not valid');
 
-            if (email && email.length < 8) throw new Error('This updated data is not valid');
+            if (email && email.length < 8) throw new Error('This data is not valid');
 
-            if (password && password.length < 6) throw new Error('This updated data is not valid');
+            if (password && password.length < 6) throw new Error('This data is not valid');
 
             next();
         } catch (e) {
             res.json(e.message);
         }
-    }
+    },
+    checkUserExistId: (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const UserModel = db.getModel('User');
+            const findUser = UserModel.findAll({
+                where: {
+                    id
+                }
+            });
 
+            if (findUser) throw new Error('This user is not registered.');
+
+            next();
+        } catch (e) {
+            res.json(e.message);
+        }
+    },
+    checkUserExistAge: (req, res, next) => {
+        try {
+            const { age } = req.params;
+            const UserModel = db.getModel('User');
+            const findUser = UserModel.findAll({
+                where: {
+                    age
+                }
+            });
+
+            if (findUser) throw new Error('This user is not registered.');
+
+            next();
+        } catch (e) {
+            res.json(e.message);
+        }
+    },
 };
