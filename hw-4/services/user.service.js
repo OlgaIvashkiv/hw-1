@@ -3,7 +3,6 @@ const db = require('../dataBase').getInstance();
 module.exports = {
     findUserById: (id) => {
         const UserModel = db.getModel('User');
-        // return UserModel.findByPk(id);
         const CarModel = db.getModel('Car');
         return CarModel.findAll({
             where: {
