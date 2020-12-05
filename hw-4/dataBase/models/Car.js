@@ -14,13 +14,27 @@ module.exports = (client, DataTypes) => {
             year: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            users_id: {
+                type: DataTypes.INTEGER,
+                foreignKey: true,
+                allowNull: false
             }
         },
         {
-            tableName: 'users',
+            tableName: 'cars',
             timestamps: false
         }
     );
+
+    const User = require('./User')(client, DataTypes);
+
+    Car.belongsTo(User, {
+        foreignKey: 'users_id',
+        as: 'user',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    });
 
     return Car;
 };

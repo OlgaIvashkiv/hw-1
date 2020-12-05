@@ -15,8 +15,7 @@ module.exports = {
 
     getAllUsers: async (req, res) => {
         try {
-            const allUsers = await userService.findAllUsers();
-
+            const allUsers = await userService.findAllUsersWithCars();
             res.status(200).json(allUsers);
         } catch (e) {
             res.status(400).json(e.message);

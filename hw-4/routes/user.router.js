@@ -11,7 +11,7 @@ userRouter.post('/', userMiddleware.checkUserValidity, userMiddleware.checkDataV
 
 userRouter.get('/age/:age', userMiddleware.checkUserExistAge, userController.getUsersOfAge);
 
-userRouter.get('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistId, userController.findUserById);
+userRouter.get('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistinBD, userController.findUserById);
 
 userRouter.delete('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistId, userController.deleteUserById);
 

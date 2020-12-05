@@ -57,6 +57,23 @@ module.exports = {
             res.json(e.message);
         }
     },
+    checkUserExistinBD: async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const UserModel = db.getModel('User');
+            const findUser = await UserModel.findAll({
+                where: {
+                    id
+                }
+            });
+
+            if (!findUser) throw new Error('This user is not registered.');
+
+            next();
+        } catch (e) {
+            res.json(e.message);
+        }
+    },
     checkUserExistId: (req, res, next) => {
         try {
             const { id } = req.params;
@@ -67,7 +84,7 @@ module.exports = {
                 }
             });
 
-            if (findUser) throw new Error('This user is not registered.');
+            if (!findUser) throw new Error('This user is not registered.');
 
             next();
         } catch (e) {
