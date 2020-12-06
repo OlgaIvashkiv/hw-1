@@ -1,4 +1,5 @@
 const db = require('../dataBase').getInstance();
+const { userService } = require('../services');
 
 module.exports = {
     findUserByEmail: (req, res, next) => {
@@ -57,35 +58,14 @@ module.exports = {
             res.json(e.message);
         }
     },
-    checkUserExistinBD: async (req, res, next) => {
+    checkUserExistInBD: async (req, res, next) => {
         try {
             const { id } = req.params;
-            const UserModel = db.getModel('User');
-            const findUser = await UserModel.findAll({
-                where: {
-                    id
-                }
-            });
+            const findUser = await userService.findUserById(id);
 
-            if (!findUser) throw new Error('This user is not registered.');
+            if (!findUser.length) throw new Error('This user is not registered.');
 
-            next();
-        } catch (e) {
-            res.json(e.message);
-        }
-    },
-    checkUserExistId: (req, res, next) => {
-        try {
-            const { id } = req.params;
-            const UserModel = db.getModel('User');
-            const findUser = UserModel.findAll({
-                where: {
-                    id
-                }
-            });
-
-            if (!findUser) throw new Error('This user is not registered.');
-
+            req.user = findUser;
             next();
         } catch (e) {
             res.json(e.message);

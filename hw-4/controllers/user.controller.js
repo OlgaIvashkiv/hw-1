@@ -23,8 +23,8 @@ module.exports = {
     },
     findUserById: async (req, res) => {
         try {
-            const { id } = req.params;
-            const findUser = await userService.findUserById(id);
+            const [{ user }] = req.user;
+            const findUser = await userService.findUserById(user.id);
 
             res.status(200).json(findUser);
         } catch (e) {
@@ -33,10 +33,11 @@ module.exports = {
     },
     deleteUserById: async (req, res) => {
         try {
-            await userService.deleteUserById(req.params.id);
+            const [{ user }] = req.user;
+
+            await userService.deleteUserById(user.id);
 
             res.status(200).json({
-                data: req.body,
                 message: 'User is deleted'
             });
         } catch (e) {

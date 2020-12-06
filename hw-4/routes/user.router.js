@@ -11,11 +11,11 @@ userRouter.post('/', userMiddleware.checkUserValidity, userMiddleware.checkDataV
 
 userRouter.get('/age/:age', userMiddleware.checkUserExistAge, userController.getUsersOfAge);
 
-userRouter.get('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistinBD, userController.findUserById);
+userRouter.get('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistInBD, userController.findUserById);
 
-userRouter.delete('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistId, userController.deleteUserById);
+userRouter.delete('/:id', userMiddleware.checkIdValidity, userMiddleware.checkUserExistInBD, userController.deleteUserById);
 
 userRouter.put('/:id', userMiddleware.checkIdValidity, userMiddleware.checkDataValidity,
-    userMiddleware.checkUserExistId, userController.updateUserById);
+    userMiddleware.checkUserExistInBD, userController.updateUserById);
 
 module.exports = userRouter;
