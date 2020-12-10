@@ -6,7 +6,7 @@ const userRouter = Router();
 
 userRouter.get('/', userController.getAllUsers);
 
-userRouter.post('/', userMiddleware.checkUserValidity, userMiddleware.checkDataValidity,
+userRouter.post('/', userMiddleware.checkDataValidity, userMiddleware.checkUserValidity,
     userMiddleware.findUserByEmail, userController.createUser);
 
 userRouter.get('/age/:age', userMiddleware.checkUserExistAge, userController.getUsersOfAge);

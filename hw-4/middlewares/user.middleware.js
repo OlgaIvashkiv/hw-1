@@ -1,5 +1,10 @@
 const db = require('../dataBase').getInstance();
 const { userService } = require('../services');
+const {
+    ErrorHandler, errors: {
+        NOT_VALID_ID, NOT_VALID_BODY, USER_ALREADY_IN_DB, USER_NOT_REGISTERED
+    }
+} = require('../error');
 
 module.exports = {
     findUserByEmail: (req, res, next) => {
@@ -12,50 +17,51 @@ module.exports = {
                 }
             });
 
-            if (findUser) throw new Error('This user is already registered.');
+            if (findUser) throw new ErrorHandler(USER_ALREADY_IN_DB.message, USER_ALREADY_IN_DB.code);
 
             req.user = email;
             next();
         } catch (e) {
-            res.status(400)
-                .json(e.message);
+            next(e);
         }
     },
     checkUserValidity: (req, res, next) => {
         try {
             const { age, email, password } = req.body;
             if (age < 13 || email.length < 8 || password.length < 6) {
-                throw new Error('This user data is not valid');
+                throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
             }
             next();
         } catch (e) {
-            res.json(e.message);
+            next(e);
         }
     },
     checkIdValidity: (req, res, next) => {
         try {
             const { id } = req.params;
 
-            if (id <= 0 || !typeof (Number)) throw new Error('ID must be type of number and greater than 0.');
+            if (id <= 0 || !typeof (Number)) throw new Error(NOT_VALID_ID.message, NOT_VALID_ID.code);
 
             next();
         } catch (e) {
-            res.json(e.message);
+            next(e);
         }
     },
     checkDataValidity: (req, res, next) => {
         try {
             const { age, email, password } = req.body;
 
-            if (age && age < 13) throw new Error('This data is not valid');
+            if (!age || !email || !password) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
 
-            if (email && email.length < 8) throw new Error('This data is not valid');
+            if (age && age < 13) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
 
-            if (password && password.length < 6) throw new Error('This data is not valid');
+            if (email && email.length < 6) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
+
+            if (password && password.length < 6) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
 
             next();
         } catch (e) {
-            res.json(e.message);
+            next(e);
         }
     },
     checkUserExistInBD: async (req, res, next) => {
@@ -63,12 +69,12 @@ module.exports = {
             const { id } = req.params;
             const findUser = await userService.findUserById(id);
 
-            if (!findUser.length) throw new Error('This user is not registered.');
+            if (!findUser.length) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
 
             req.user = findUser;
             next();
         } catch (e) {
-            res.json(e.message);
+            next(e);
         }
     },
     checkUserExistAge: (req, res, next) => {
@@ -81,11 +87,11 @@ module.exports = {
                 }
             });
 
-            if (findUser) throw new Error('This user is not registered.');
+            if (findUser) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
 
             next();
         } catch (e) {
-            res.json(e.message);
+            next(e);
         }
     },
 };

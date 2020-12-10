@@ -1,68 +1,81 @@
 const { userService } = require('../services');
+const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
+const { errors: { USER_IS_UPDATED, USER_IS_DELETED } } = require('../error');
 
 module.exports = {
-    createUser: async (req, res) => {
+    createUser: async (req, res, next) => {
         try {
             const user = req.body;
 
             await userService.addUserToDB(user);
 
-            res.status(201).json(user);
+            res
+                .status(OK)
+                .json(user);
         } catch (e) {
-            res.status(400).json(e.message);
+            next(e);
         }
     },
 
-    getAllUsers: async (req, res) => {
+    getAllUsers: async (req, res, next) => {
         try {
             const allUsers = await userService.findAllUsersWithCars();
-            res.status(200).json(allUsers);
+
+            res
+                .status(OK)
+                .json(allUsers);
         } catch (e) {
-            res.status(400).json(e.message);
+            next(e);
         }
     },
-    findUserById: async (req, res) => {
+    findUserById: async (req, res, next) => {
         try {
             const [{ user }] = req.user;
             const findUser = await userService.findUserById(user.id);
 
-            res.status(200).json(findUser);
+            res
+                .status(OK)
+                .json(findUser);
         } catch (e) {
-            res.status(400).json(e.message);
+            next(e);
         }
     },
-    deleteUserById: async (req, res) => {
+    deleteUserById: async (req, res, next) => {
         try {
             const [{ user }] = req.user;
 
             await userService.deleteUserById(user.id);
 
-            res.status(200).json({
-                message: 'User is deleted'
-            });
+            res
+                .status(NO_CONTENT)
+                .json({
+                    message: USER_IS_DELETED.message
+                });
         } catch (e) {
-            res.status(404).json(e.message);
+            next(e);
         }
     },
-    getUsersOfAge: async (req, res) => {
+    getUsersOfAge: async (req, res, next) => {
         try {
             const result = await userService.findUsersByAge(req.params.age);
 
-            res.status(200).json(result);
+            res.status(OK)
+                .json(result);
         } catch (e) {
-            res.status(404).json(e.message);
+            next(e);
         }
     },
-    updateUserById: async (req, res) => {
+    updateUserById: async (req, res, next) => {
         try {
             await userService.updateUserById(req.body, req.params.id);
 
-            res.status(200).json({
-                data: req.body,
-                message: 'Updated info'
-            });
+            res.status(CREATED)
+                .json({
+                    data: req.body,
+                    message: USER_IS_UPDATED.message
+                });
         } catch (e) {
-            res.status(404).json(e.message);
+            next(e);
         }
     },
 
