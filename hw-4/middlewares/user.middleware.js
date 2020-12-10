@@ -47,11 +47,14 @@ module.exports = {
             next(e);
         }
     },
+    // eslint-disable-next-line complexity
     checkDataValidity: (req, res, next) => {
         try {
-            const { age, email, password } = req.body;
+            const {
+                age, email, password, ...other
+            } = req.body;
 
-            if (!age || !email || !password) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
+            if (!age || !email || !password || other) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
 
             if (age && age < 13) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
 
