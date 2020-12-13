@@ -26,5 +26,10 @@ module.exports = {
     USER_IS_DELETED: {
         message: 'User is deleted',
         code: NO_CONTENT
+    },
+    WRONG_EMAIL_OR_PASS: {
+        message: 'Email or password is incorrect',
+        code: BAD_REQUEST
     }
+
 };

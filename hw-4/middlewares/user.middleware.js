@@ -1,9 +1,8 @@
 const db = require('../dataBase').getInstance();
 const { userService } = require('../services');
-const { ErrorHandler, errors: { USER_ALREADY_IN_DB, USER_NOT_REGISTERED }
-} = require('../error');
-const {BAD_REQUEST} = require('../configs/error-codes');
-const {idValidator, newUserValidator, updateUserValidator} = require('../validators');
+const { ErrorHandler, errors: { USER_ALREADY_IN_DB, USER_NOT_REGISTERED } } = require('../error');
+const { BAD_REQUEST } = require('../configs/error-codes');
+const { idValidator, newUserValidator, updateUserValidator } = require('../validators');
 
 module.exports = {
     findUserByEmail: async (req, res, next) => {
@@ -65,7 +64,7 @@ module.exports = {
         try {
             const { id } = req.params;
             const findUser = await userService.findUserById(id);
-
+            console.log(findUser, '******');
             if (!findUser.length) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
 
             req.user = findUser;

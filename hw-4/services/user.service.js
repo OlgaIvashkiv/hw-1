@@ -3,19 +3,15 @@ const db = require('../dataBase').getInstance();
 module.exports = {
     findUserById: (id) => {
         const UserModel = db.getModel('User');
-        const CarModel = db.getModel('Car');
-        return CarModel.findAll({
-            where: {
-                users_id: id
-            },
-            include: [{ model: UserModel, as: 'user' }]
-        });
+
+        return UserModel.findAll({ where: { id } });
     },
     findAllUsersWithCars: () => {
         const UserModel = db.getModel('User');
         const CarModel = db.getModel('Car');
-        return CarModel.findAll({
-            include: [{ model: UserModel, as: 'user' }]
+
+        return UserModel.findAll({
+            include: { model: CarModel }
         });
     },
     addUserToDB: (user) => {

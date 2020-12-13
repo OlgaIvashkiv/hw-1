@@ -1,17 +1,16 @@
 const { userService } = require('../services');
 const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
 const { errors: { USER_IS_UPDATED, USER_IS_DELETED } } = require('../error');
+const { hash } = require('../helpers/password.helper');
 
 module.exports = {
     createUser: async (req, res, next) => {
         try {
-            const user = req.body;
+            const password = await hash(req.body.password);
 
-            await userService.addUserToDB(user);
+            await userService.addUserToDB({ ...req.body, password });
 
-            res
-                .status(OK)
-                .json(user);
+            res.status(OK).json('User created');
         } catch (e) {
             next(e);
         }
@@ -30,21 +29,23 @@ module.exports = {
     },
     findUserById: async (req, res, next) => {
         try {
-            const [{ user }] = req.user;
-            const findUser = await userService.findUserById(user.id);
+            const [{
+                id, name, email, age
+            }] = req.user;
+            await userService.findUserById(id);
 
             res
                 .status(OK)
-                .json(findUser);
+                .json({ name, email, age });
         } catch (e) {
             next(e);
         }
     },
     deleteUserById: async (req, res, next) => {
         try {
-            const [{ user }] = req.user;
+            const [{ id }] = req.user;
 
-            await userService.deleteUserById(user.id);
+            await userService.deleteUserById(id);
 
             res
                 .status(NO_CONTENT)
@@ -71,7 +72,6 @@ module.exports = {
 
             res.status(CREATED)
                 .json({
-                    data: req.body,
                     message: USER_IS_UPDATED.message
                 });
         } catch (e) {
