@@ -7,17 +7,18 @@ const {
 } = require('../error');
 
 module.exports = {
-    findUserByEmail: (req, res, next) => {
+    findUserByEmail: async (req, res, next) => {
         try {
             const { email } = req.body;
+
             const UserModel = db.getModel('User');
-            const findUser = UserModel.findAll({
+            const findUser = await UserModel.findAll({
                 where: {
                     email
                 }
             });
 
-            if (findUser) throw new ErrorHandler(USER_ALREADY_IN_DB.message, USER_ALREADY_IN_DB.code);
+            if (findUser.length) throw new ErrorHandler(USER_ALREADY_IN_DB.message, USER_ALREADY_IN_DB.code);
 
             req.user = email;
             next();
@@ -40,14 +41,13 @@ module.exports = {
         try {
             const { id } = req.params;
 
-            if (id <= 0 || !typeof (Number)) throw new Error(NOT_VALID_ID.message, NOT_VALID_ID.code);
+            if (id <= 0 || !typeof (Number)) throw new ErrorHandler(NOT_VALID_ID.message, NOT_VALID_ID.code);
 
             next();
         } catch (e) {
             next(e);
         }
     },
-    // eslint-disable-next-line complexity
     checkDataValidity: (req, res, next) => {
         try {
             const {
@@ -75,22 +75,23 @@ module.exports = {
             if (!findUser.length) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
 
             req.user = findUser;
+
             next();
         } catch (e) {
             next(e);
         }
     },
-    checkUserExistAge: (req, res, next) => {
+    checkUserExistAge: async (req, res, next) => {
         try {
             const { age } = req.params;
             const UserModel = db.getModel('User');
-            const findUser = UserModel.findAll({
+            const findUser = await UserModel.findAll({
                 where: {
                     age
                 }
             });
 
-            if (findUser) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
+            if (!findUser.length) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
 
             next();
         } catch (e) {

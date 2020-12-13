@@ -30,9 +30,9 @@ module.exports = {
     },
     findUserById: async (req, res, next) => {
         try {
-            const [{ user }] = req.user;
-            const findUser = await userService.findUserById(user.id);
-
+            const [{ id }] = req.user;
+            const findUser = await userService.findUserById(id);
+            console.log(findUser,'*********')
             res
                 .status(OK)
                 .json(findUser);
