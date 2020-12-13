@@ -1,23 +1,22 @@
 const db = require('../dataBase').getInstance();
 const { userService } = require('../services');
-const {
-    ErrorHandler, errors: {
-        NOT_VALID_ID, NOT_VALID_BODY, USER_ALREADY_IN_DB, USER_NOT_REGISTERED
-    }
+const { ErrorHandler, errors: { USER_ALREADY_IN_DB, USER_NOT_REGISTERED }
 } = require('../error');
+const {BAD_REQUEST} = require('../configs/error-codes');
+const {idValidator, newUserValidator, updateUserValidator} = require('../validators');
 
 module.exports = {
-    findUserByEmail: (req, res, next) => {
+    findUserByEmail: async (req, res, next) => {
         try {
             const { email } = req.body;
             const UserModel = db.getModel('User');
-            const findUser = UserModel.findAll({
+            const findUser = await UserModel.findAll({
                 where: {
                     email
                 }
             });
 
-            if (findUser) throw new ErrorHandler(USER_ALREADY_IN_DB.message, USER_ALREADY_IN_DB.code);
+            if (findUser.length) throw new ErrorHandler(USER_ALREADY_IN_DB.message, USER_ALREADY_IN_DB.code);
 
             req.user = email;
             next();
@@ -27,9 +26,10 @@ module.exports = {
     },
     checkUserValidity: (req, res, next) => {
         try {
-            const { age, email, password } = req.body;
-            if (age < 13 || email.length < 8 || password.length < 6) {
-                throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
+            const { error } = newUserValidator.validate(req.body);
+
+            if (error) {
+                throw new ErrorHandler(error.details[0].message, BAD_REQUEST);
             }
             next();
         } catch (e) {
@@ -39,28 +39,22 @@ module.exports = {
     checkIdValidity: (req, res, next) => {
         try {
             const { id } = req.params;
+            const { error } = idValidator.validate(id);
 
-            if (id <= 0 || !typeof (Number)) throw new Error(NOT_VALID_ID.message, NOT_VALID_ID.code);
+            if (error) throw new ErrorHandler(error.details[0].message, BAD_REQUEST);
 
             next();
         } catch (e) {
             next(e);
         }
     },
-    // eslint-disable-next-line complexity
     checkDataValidity: (req, res, next) => {
         try {
-            const {
-                age, email, password, ...other
-            } = req.body;
+            const { error } = updateUserValidator.validate(req.body);
 
-            if (!age || !email || !password || other) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
-
-            if (age && age < 13) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
-
-            if (email && email.length < 6) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
-
-            if (password && password.length < 6) throw new ErrorHandler(NOT_VALID_BODY.message, NOT_VALID_BODY.code);
+            if (error) {
+                throw new ErrorHandler(error.details[0].message, BAD_REQUEST);
+            }
 
             next();
         } catch (e) {
@@ -80,17 +74,17 @@ module.exports = {
             next(e);
         }
     },
-    checkUserExistAge: (req, res, next) => {
+    checkUserExistAge: async (req, res, next) => {
         try {
             const { age } = req.params;
             const UserModel = db.getModel('User');
-            const findUser = UserModel.findAll({
+            const findUser = await UserModel.findAll({
                 where: {
                     age
                 }
             });
 
-            if (findUser) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
+            if (!findUser.length) throw new ErrorHandler(USER_NOT_REGISTERED.message, USER_NOT_REGISTERED.code);
 
             next();
         } catch (e) {
