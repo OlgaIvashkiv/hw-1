@@ -31,5 +31,12 @@ module.exports = {
         return OAuthModel.destroy({
             where: { access_token: accessToken }
         });
+    },
+    deleteTokenById: (id) => {
+        const OAuthModel = db.getModel('O_Auth');
+
+        return OAuthModel.destroy({
+            where: { id }
+        });
     }
 };

@@ -26,5 +26,18 @@ module.exports = {
         } catch (e) {
             next(e);
         }
+    },
+    refreshTokenPair: async (req, res, next) => {
+        try {
+            const { id } = req.user;
+            await authService.deleteTokenById(id);
+
+            const token_pair = tokenizer();
+            await authService.createTokenPair({ user_id: id, ...token_pair });
+
+            res.json(token_pair);
+        } catch (e) {
+            next(e);
+        }
     }
 };
