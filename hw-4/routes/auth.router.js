@@ -2,8 +2,9 @@ const { Router } = require('express');
 const { authMiddleware: { authMiddlewares } } = require('../middlewares');
 const { authController } = require('../controllers');
 
-const authrouter = Router();
+const authRouter = Router();
 
-authrouter.post('/', authMiddlewares.findUserByEmail, authMiddlewares.checkPasswordValidity, authController.login);
+authRouter.post('/', authMiddlewares.findUserByEmail, authMiddlewares.checkPasswordValidity, authController.login);
+authRouter.get('/logout', authController.logoutUser);
 
-module.exports = authrouter;
+module.exports = authRouter;
