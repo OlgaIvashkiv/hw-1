@@ -27,7 +27,7 @@ module.exports = {
         });
 
         await queryInterface.createTable('cars', {
-            idCar: {
+            id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
@@ -39,16 +39,35 @@ module.exports = {
             year: {
                 type: Sequelize.INTEGER,
                 allowNull: false
-            },
-            users_id: {
+            }
+        });
+        await queryInterface.createTable('user_2_car', {
+            id: {
                 type: Sequelize.INTEGER,
-                foreignKey: true,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            user_id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
+                foreignKey: true,
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 references: {
                     model: 'users',
                     as: 'user',
+                    key: 'id'
+                }
+            },
+            car_id: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                foreignKey: true,
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                references: {
+                    model: 'cars',
+                    as: 'car',
                     key: 'id'
                 }
             }
@@ -58,5 +77,6 @@ module.exports = {
     down: async (queryInterface, Sequelize) => {
         await queryInterface.dropTable('cars');
         await queryInterface.dropTable('users');
+        await queryInterface.dropTable('user_2_car');
     }
 };

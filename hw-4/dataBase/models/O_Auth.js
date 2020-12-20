@@ -1,40 +1,35 @@
 module.exports = (client, DataTypes) => {
-    const User = client.define(
-        'User',
+    const O_Auth = client.define(
+        'O_Auth',
         {
             id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
             },
-            name: {
+            access_token: {
                 type: DataTypes.STRING,
                 allowNull: false
             },
-            email: {
+            refresh_token: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
             },
-            password: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            age: {
+            user_id: {
                 type: DataTypes.INTEGER,
-                allowNull: false
+                allowNull: false,
+                foreignKey: true
+            },
+            created_at: {
+                type: DataTypes.DATE,
+                default: DataTypes.NOW
             }
         },
         {
-            tableName: 'users',
+            tableName: 'o_auth',
             timestamps: false
         }
     );
-    const O_Auth = require('./O_Auth')(client, DataTypes);
 
-    User.hasMany(O_Auth, {
-        foreignKey: 'user_id',
-        onDelete: 'cascade'
-    });
-    return User;
+    return O_Auth;
 };

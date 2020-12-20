@@ -1,6 +1,6 @@
-const { ErrorHandler, errors: { WRONG_EMAIL_OR_PASS } } = require('../error');
-const { authService } = require('../services');
-const { compare } = require('../helpers/password.helper');
+const { ErrorHandler, errors: { WRONG_EMAIL_OR_PASS } } = require('../../error');
+const { authService } = require('../../services');
+const { compare } = require('../../helpers/password.helper');
 
 module.exports = {
     findUserByEmail: async (req, res, next) => {

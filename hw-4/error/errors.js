@@ -1,5 +1,5 @@
 const {
-    CREATED, NO_CONTENT, BAD_REQUEST, FORBIDDEN
+    CREATED, NO_CONTENT, BAD_REQUEST, FORBIDDEN, UNAUTHORIZED
 } = require('../configs/error-codes');
 
 module.exports = {
@@ -30,6 +30,14 @@ module.exports = {
     WRONG_EMAIL_OR_PASS: {
         message: 'Email or password is incorrect',
         code: BAD_REQUEST
+    },
+    NOT_VALID_TOKEN: {
+        message: 'Not valid token',
+        code: UNAUTHORIZED
+    },
+    PERMISSION_DENIED: {
+        message: 'Permission denied',
+        code: FORBIDDEN
     }
 
 };

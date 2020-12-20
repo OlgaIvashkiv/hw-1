@@ -1,7 +1,10 @@
+const { Op } = require('sequelize');
 const { userService } = require('../services');
 const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
 const { errors: { USER_IS_UPDATED, USER_IS_DELETED } } = require('../error');
 const { hash } = require('../helpers/password.helper');
+
+const db = require('../dataBase').getInstance();
 
 module.exports = {
     createUser: async (req, res, next) => {
@@ -18,7 +21,7 @@ module.exports = {
 
     getAllUsers: async (req, res, next) => {
         try {
-            const allUsers = await userService.findAllUsersWithCars();
+            const allUsers = await userService.findAllUsers();
 
             res
                 .status(OK)
@@ -43,7 +46,7 @@ module.exports = {
     },
     deleteUserById: async (req, res, next) => {
         try {
-            const [{ id }] = req.user;
+            const id = req.user;
 
             await userService.deleteUserById(id);
 
@@ -52,16 +55,6 @@ module.exports = {
                 .json({
                     message: USER_IS_DELETED.message
                 });
-        } catch (e) {
-            next(e);
-        }
-    },
-    getUsersOfAge: async (req, res, next) => {
-        try {
-            const result = await userService.findUsersByAge(req.params.age);
-
-            res.status(OK)
-                .json(result);
         } catch (e) {
             next(e);
         }
@@ -78,5 +71,38 @@ module.exports = {
             next(e);
         }
     },
+    findUserWithCarById: async (req, res) => {
+        const User = db.getModel('User');
+        const User_2_Car = db.getModel('User_2_Car');
+        const Car = db.getModel('Car');
 
+        const { id } = req.params;
+
+        let user = await User.findByPk(id);
+
+        user = user && user.dataValues;
+
+        const relations = await User_2_Car.findAll({
+            where: {
+                user_id: id
+            }
+        });
+
+        const car_ids = relations.map((relation) => relation && relation.car_id);
+
+        const cars = await Car.findAll({
+            where: {
+                id: {
+                    [Op.in]: car_ids
+                }
+            }
+        });
+
+        Object.assign(user, { cars });
+        // eslint-disable-next-line no-unused-vars
+        const { password, ...normalizedUser } = user;
+        user = normalizedUser;
+
+        res.json(user);
+    }
 };

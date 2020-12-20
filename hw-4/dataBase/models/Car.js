@@ -2,7 +2,7 @@ module.exports = (client, DataTypes) => {
     const Car = client.define(
         'Car',
         {
-            idCar: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
@@ -13,11 +13,6 @@ module.exports = (client, DataTypes) => {
             },
             year: {
                 type: DataTypes.INTEGER,
-                allowNull: false
-            },
-            users_id: {
-                type: DataTypes.INTEGER,
-                foreignKey: true,
                 allowNull: false
             }
         },

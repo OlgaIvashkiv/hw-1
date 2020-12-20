@@ -10,9 +10,9 @@ module.exports = {
         }]);
 
         await queryInterface.bulkInsert('cars', [{
+            id: 1,
             model: 'mercedes',
-            year: 2011,
-            users_id: 1,
+            year: 2011
         }]);
     },
     // eslint-disable-next-line no-unused-vars

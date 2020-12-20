@@ -6,25 +6,14 @@ module.exports = {
 
         return UserModel.findAll({ where: { id } });
     },
-    findAllUsersWithCars: () => {
+    findAllUsers: () => {
         const UserModel = db.getModel('User');
-        const CarModel = db.getModel('Car');
 
-        return UserModel.findAll({
-            include: { model: CarModel }
-        });
+        return UserModel.findAll();
     },
     addUserToDB: (user) => {
         const UserModel = db.getModel('User');
         return UserModel.create(user);
-    },
-    findUsersByAge: (age) => {
-        const UserModel = db.getModel('User');
-        return UserModel.findAll({
-            where: {
-                age
-            }
-        });
     },
     deleteUserById: (id) => {
         const UserModel = db.getModel('User');
