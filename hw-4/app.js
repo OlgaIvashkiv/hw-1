@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 
-const { userRouter, authRouter } = require('./routes');
+const { authRouter, carRouter, userRouter } = require('./routes');
 const db = require('./dataBase').getInstance();
 
 db.setModels();
@@ -14,6 +14,7 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
+app.use('/cars', carRouter);
 // eslint-disable-next-line no-unused-vars
 app.use('*', (err, req, res, next) => {
     res.status(err.code || 500)
