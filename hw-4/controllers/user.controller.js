@@ -98,12 +98,11 @@ module.exports = {
                 const photoName = `${uuid}.${fileExtension}`;
                 const finalPhotoPath = path.join(pathWithoutPublic, photoName);
 
-                await fs.rmdir(path.join(pathWithoutPublic), { recursive: true }, (err) => { if (err) console.log(err); });
-                await fs.mkdir(path.join(photoDir), { recursive: true }, (err) => { if (err) console.log(err); });
+                await fs.rmdir(pathWithoutPublic, { recursive: true });
+                await fs.mkdir(photoDir, { recursive: true });
                 await avatar.mv(path.join(photoDir, photoName));
 
                 req.user.avatar = finalPhotoPath;
-
 
                 await userService.updateUserById(params.id, req.user);
             }
