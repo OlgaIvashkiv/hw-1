@@ -1,4 +1,8 @@
+const path = require('path');
+const fs = require('fs');
 const { Op } = require('sequelize');
+const uuid = require('uuid').v1();
+
 const { userService } = require('../services');
 const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
 const { errors: { USER_IS_UPDATED, USER_IS_DELETED } } = require('../error');
@@ -9,9 +13,27 @@ const db = require('../dataBase').getInstance();
 module.exports = {
     createUser: async (req, res, next) => {
         try {
-            const password = await hash(req.body.password);
+            const {
+                avatar,
+                body: { password }
+            } = req;
+            const hashedPassword = await hash(password);
 
-            await userService.addUserToDB({ ...req.body, password });
+            const createdUser = await userService.addUserToDB({ ...req.body, password: hashedPassword });
+
+            if (avatar) {
+                const pathWithoutPublic = path.join('user', `${createdUser.id}`, 'photos');
+                const photoDir = path.join(process.cwd(), 'public', pathWithoutPublic);
+                const fileExtension = avatar.name.split('.').pop();
+                const photoName = `${uuid}.${fileExtension}`;
+                const finalPhotoPath = path.join(pathWithoutPublic, photoName);
+
+                await fs.mkdir(photoDir, { recursive: true });
+                await avatar.mv(path.join(photoDir, photoName));
+
+                await userService.updateUserById(createdUser.id, { avatar: finalPhotoPath });
+            }
+            // await emailService.sendMail(email, WELCOME, { userName: name });
 
             res.status(OK).json('User created');
         } catch (e) {
@@ -46,9 +68,13 @@ module.exports = {
     },
     deleteUserById: async (req, res, next) => {
         try {
-            const id = req.user;
+            const { id } = req.params;
 
             await userService.deleteUserById(id);
+
+            const userDir = path.join(process.cwd(), 'public', 'user', `${id}`);
+
+            fs.rmdir(userDir, { recursive: true }, (err) => { if (err) console.log(err); });
 
             res
                 .status(NO_CONTENT)
@@ -61,12 +87,29 @@ module.exports = {
     },
     updateUserById: async (req, res, next) => {
         try {
-            await userService.updateUserById(req.body, req.params.id);
+            const {
+                avatar, params
+            } = req;
 
-            res.status(CREATED)
-                .json({
-                    message: USER_IS_UPDATED.message
-                });
+            if (avatar) {
+                const pathWithoutPublic = path.join('user', `${params.id}`, 'photos');
+                const photoDir = path.join(process.cwd(), 'public', pathWithoutPublic);
+                const fileExtension = avatar.name.split('.').pop();
+                const photoName = `${uuid}.${fileExtension}`;
+                const finalPhotoPath = path.join(pathWithoutPublic, photoName);
+
+                await fs.rmdir(path.join(pathWithoutPublic), { recursive: true }, (err) => { if (err) console.log(err); });
+                await fs.mkdir(photoDir, { recursive: true }, (err) => { if (err) console.log(err); });
+                await avatar.mv(path.join(photoDir, photoName));
+
+                req.user.avatar = finalPhotoPath;
+                // req.user.password = await hash(req.user.password);
+                console.log(req.user, 'req user');
+
+                await userService.updateUserById(params.id, req.user);
+            }
+
+            res.status(CREATED);
         } catch (e) {
             next(e);
         }

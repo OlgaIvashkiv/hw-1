@@ -1,4 +1,5 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const path = require('path');
 
 const { authRouter, carRouter, userRouter } = require('./routes');
@@ -8,6 +9,7 @@ db.setModels();
 
 const app = express();
 
+app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), 'public')));

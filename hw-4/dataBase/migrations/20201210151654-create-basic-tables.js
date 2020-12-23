@@ -22,6 +22,9 @@ module.exports = {
             age: {
                 type: Sequelize.INTEGER,
                 allowNull: false
+            },
+            avatar: {
+                type: Sequelize.STRING
             }
 
         });

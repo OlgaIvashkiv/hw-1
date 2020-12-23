@@ -23,6 +23,9 @@ module.exports = (client, DataTypes) => {
             age: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            avatar: {
+                type: DataTypes.STRING
             }
         },
         {

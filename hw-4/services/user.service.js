@@ -23,12 +23,14 @@ module.exports = {
             }
         });
     },
-    updateUserById: (updatedData, id) => {
+    updateUserById: (id, updatedData) => {
         const UserModel = db.getModel('User');
-        return UserModel.update(updatedData, {
-            where: {
-                id
-            }
-        });
-    }
+        console.log(updatedData, 'updated data');
+
+        return UserModel.update(
+            { ...updatedData },
+            { where: { id } }
+        );
+    },
+
 };
