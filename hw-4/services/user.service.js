@@ -25,7 +25,6 @@ module.exports = {
     },
     updateUserById: (id, updatedData) => {
         const UserModel = db.getModel('User');
-        console.log(updatedData, 'updated data');
 
         return UserModel.update(
             { ...updatedData },

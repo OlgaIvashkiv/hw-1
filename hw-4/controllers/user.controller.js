@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra').promises;
 const { Op } = require('sequelize');
 const uuid = require('uuid').v1();
 
@@ -99,7 +99,7 @@ module.exports = {
                 const finalPhotoPath = path.join(pathWithoutPublic, photoName);
 
                 await fs.rmdir(path.join(pathWithoutPublic), { recursive: true }, (err) => { if (err) console.log(err); });
-                await fs.mkdir(photoDir, { recursive: true }, (err) => { if (err) console.log(err); });
+                await fs.mkdir(path.join(photoDir), { recursive: true }, (err) => { if (err) console.log(err); });
                 await avatar.mv(path.join(photoDir, photoName));
 
                 req.user.avatar = finalPhotoPath;
