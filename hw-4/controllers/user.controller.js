@@ -103,13 +103,12 @@ module.exports = {
                 await avatar.mv(path.join(photoDir, photoName));
 
                 req.user.avatar = finalPhotoPath;
-                // req.user.password = await hash(req.user.password);
-                console.log(req.user, 'req user');
+
 
                 await userService.updateUserById(params.id, req.user);
             }
 
-            res.status(CREATED);
+            res.status(CREATED).json(USER_IS_UPDATED.message);
         } catch (e) {
             next(e);
         }
