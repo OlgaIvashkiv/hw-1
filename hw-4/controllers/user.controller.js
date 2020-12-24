@@ -74,7 +74,7 @@ module.exports = {
 
             const userDir = path.join(process.cwd(), 'public', 'user', `${id}`);
 
-            fs.rmdir(userDir, { recursive: true }, (err) => { if (err) console.log(err); });
+            fs.rmdir(userDir, { recursive: true });
 
             res
                 .status(NO_CONTENT)
@@ -88,8 +88,10 @@ module.exports = {
     updateUserById: async (req, res, next) => {
         try {
             const {
-                avatar, params
+                avatar, params, body: { password }
             } = req;
+
+            req.user = { ...req.body };
 
             if (avatar) {
                 const pathWithoutPublic = path.join('user', `${params.id}`, 'photos');
@@ -98,16 +100,34 @@ module.exports = {
                 const photoName = `${uuid}.${fileExtension}`;
                 const finalPhotoPath = path.join(pathWithoutPublic, photoName);
 
-                await fs.rmdir(pathWithoutPublic, { recursive: true });
-                await fs.mkdir(photoDir, { recursive: true });
+                await fs.readdir(photoDir, (err, files) => {
+                    if (err) {
+                        throw err;
+                    } else {
+                        files.forEach((file) => {
+                            fs.unlink(photoDir, file);
+                        });
+                    }
+                });
+
+                await fs.mkdir(path.join(photoDir), { recursive: true });
                 await avatar.mv(path.join(photoDir, photoName));
 
                 req.user.avatar = finalPhotoPath;
 
                 await userService.updateUserById(params.id, req.user);
             }
+            if (!password) {
+                await userService.updateUserById(params.id, req.user);
 
-            res.status(CREATED).json(USER_IS_UPDATED.message);
+                return res.sendStatus(OK);
+            }
+
+            req.user.password = await hash(password);
+
+            await userService.updateUserById(params.id, req.user);
+
+            res.status(OK).json(USER_IS_UPDATED.message);
         } catch (e) {
             next(e);
         }
