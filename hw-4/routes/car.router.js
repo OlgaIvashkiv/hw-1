@@ -1,20 +1,42 @@
 const { Router } = require('express');
 const { carController } = require('../controllers');
 const {
-    carMiddleware: { carMiddleware }, userMiddleware: { userMiddleware }
+    authMiddleware: { checkAccessToken },
+    carMiddleware: { carMiddleware },
+    fileMiddleware: { checkFileValidity, checkFileQty },
+    userMiddleware: { userMiddleware }
 } = require('../middlewares');
 
 const carRouter = Router();
 
 carRouter.get('/', carController.getAllCars);
 
-carRouter.get('/:id', userMiddleware.checkIdValidity, carMiddleware.checkCarExistInBD,
+carRouter.get('/:id',
+    userMiddleware.checkIdValidity,
+    carMiddleware.checkCarExistInBD,
+    // checkAccessToken,
     carController.findUserById);
 
-carRouter.delete('/:id', userMiddleware.checkIdValidity, carMiddleware.checkCarExistInBD,
+carRouter.post('/',
+    carMiddleware.checkCarExistInBD,
+    carMiddleware.checkDataValidity,
+    checkFileValidity,
+    checkFileQty,
+    carController.createNewCar);
+
+carRouter.delete('/:id',
+    userMiddleware.checkIdValidity,
+    carMiddleware.checkCarExistInBD,
+    // checkAccessToken,
     carController.deleteCarById);
 
-carRouter.put('/:id', userMiddleware.checkIdValidity, carMiddleware.checkDataValidity,
-    carMiddleware.checkCarExistInBD, carController.updateCarById);
+carRouter.put('/:id',
+    userMiddleware.checkIdValidity,
+    carMiddleware.checkDataValidity,
+    carMiddleware.checkCarExistInBD,
+    checkFileValidity,
+    checkFileQty,
+    // checkAccessToken,
+    carController.updateCarById);
 
 module.exports = carRouter;

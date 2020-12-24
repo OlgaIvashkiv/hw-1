@@ -27,5 +27,18 @@ module.exports = {
                 id
             }
         });
-    }
+    },
+    createCar: (car) => {
+        const CarModel = db.getModel('Car');
+
+        return CarModel.create(car);
+    },
+    updateSingleCarFiles: (data, carID) => {
+        const File = db.getModel(FILE);
+        return File.create(
+            { file_path: data.file_path, file_type: data.file_type, carID },
+            { where: { carID },
+                returning: true },
+        );
+    },
 };

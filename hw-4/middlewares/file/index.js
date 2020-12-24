@@ -1,4 +1,5 @@
 module.exports = {
-    checkFile: require('./check-file-middleware'),
-    checkAvatar: require('./check-avatar.middleware')
+    checkAvatar: require('./check-avatar.middleware'),
+    checkFileValidity: require('./check-file-middleware'),
+    checkFileQty: require('./check-file-quantity.middleware')
 };

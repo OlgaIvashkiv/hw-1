@@ -11,6 +11,9 @@ module.exports = {
     FILE_MAX_Q_TY: 10,
     PHOTO_MAX_Q_TY: 10,
 
+    TYPE_PHOTO: 'photo',
+    TYPE_DOC: 'document',
+
     PHOTOS_MIMETYPES: [
         'image/gif',
         'image/jpeg',

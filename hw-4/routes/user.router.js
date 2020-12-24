@@ -20,7 +20,7 @@ userRouter.get('/:id',
 userRouter.delete('/:id',
     userMiddleware.checkIdValidity,
     userMiddleware.checkUserExistInBD,
-    // checkAccessToken,
+    checkAccessToken,
     userController.deleteUserById);
 
 userRouter.put('/:id',
@@ -28,7 +28,7 @@ userRouter.put('/:id',
     userMiddleware.checkDataValidity,
     userMiddleware.checkUserExistInBD,
     fileMiddleware.checkAvatar,
-    // checkAccessToken,
+    checkAccessToken,
     userController.updateUserById);
 
 module.exports = userRouter;
