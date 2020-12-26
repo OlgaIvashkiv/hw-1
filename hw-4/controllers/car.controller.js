@@ -19,7 +19,7 @@ module.exports = {
             next(e);
         }
     },
-    findUserById: async (req, res, next) => {
+    findCarById: async (req, res, next) => {
         try {
             const [{ id }] = req.car;
             const foundCar = await carService.findCarById(id);
@@ -36,6 +36,17 @@ module.exports = {
             const id = req.user;
 
             await carService.deleteCarById(id);
+            await carService.deleteCarFiles(id);
+
+            const photosPathWithoutPublic = path.join('cars', `${id}`, 'photos');
+            const photosFullPath = path.join(process.cwd(), 'public', photosPathWithoutPublic);
+
+            await fs.mkdir(photosFullPath, { recursive: true });
+
+            const docsPathWithoutPublic = path.join('cars', `${id}`, 'documents');
+            const docsFullPath = path.join(process.cwd(), 'public', docsPathWithoutPublic);
+
+            await fs.mkdir(docsFullPath, { recursive: true });
 
             res
                 .status(NO_CONTENT)
@@ -48,7 +59,51 @@ module.exports = {
     },
     updateCarById: async (req, res, next) => {
         try {
-            await carService.updateCarById(req.body, req.params.id);
+            const {
+                photos,
+                documents,
+                body, params
+            } = req;
+
+            if (photos) {
+                const photosPathWithoutPublic = path.join('cars', `${params.id}`, 'photos');
+                const photosFullPath = path.join(process.cwd(), 'public', photosPathWithoutPublic);
+
+                await fs.mkdir(photosFullPath, { recursive: true });
+
+                photos.map(async (photo) => {
+                    const photoExtension = photo.name.split('.').pop();
+                    const newPhotoName = `${uuid}.${photoExtension}`;
+
+                    await photo.mv(path.join(photosFullPath, newPhotoName));
+
+                    const file_type = TYPE_PHOTO;
+                    const file_path = await path.join(photosFullPath, newPhotoName);
+
+                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: params.id });
+                });
+            }
+
+            if (documents) {
+                const docsPathWithoutPublic = path.join('cars', `${params.id}`, 'documents');
+                const docsFullPath = path.join(process.cwd(), 'public', docsPathWithoutPublic);
+
+                await fs.mkdir(docsFullPath, { recursive: true });
+
+                documents.map(async (document) => {
+                    const photoExtension = document.name.split('.').pop();
+                    const newDocumentName = `${uuid}.${photoExtension}`;
+
+                    await document.mv(path.join(docsFullPath, newDocumentName));
+
+                    const file_type = TYPE_DOC;
+                    const file_path = await path.join(docsFullPath, newDocumentName);
+
+                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: params.id });
+                });
+            }
+
+            await carService.updateCarById(body, params.id);
 
             res.status(CREATED)
                 .json({
@@ -63,7 +118,7 @@ module.exports = {
             const {
                 photos,
                 documents,
-                body
+                body, params
             } = req;
 
             const newCar = await carService.createCar(body);
@@ -83,7 +138,7 @@ module.exports = {
                     const file_type = TYPE_PHOTO;
                     const file_path = await path.join(photosFullPath, newPhotoName);
 
-                    await carService.updateSingleCarPhotos({ file_type, file_path }, newCar.id);
+                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: newCar.id });
                 });
             }
 
@@ -102,9 +157,11 @@ module.exports = {
                     const file_type = TYPE_DOC;
                     const file_path = await path.join(docsFullPath, newDocumentName);
 
-                    await carService.updateSingleCarDocuments({ file_type, file_path }, newCar.id);
+                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: newCar.id });
                 });
             }
+            const user2Car = { user_id: params.id, car_id: newCar.id };
+            await carService.assignCarToUser(user2Car);
 
             res.status(CREATED).json(newCar);
         } catch (e) {

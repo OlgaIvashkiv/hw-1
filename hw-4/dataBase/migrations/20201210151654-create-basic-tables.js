@@ -75,11 +75,43 @@ module.exports = {
                 }
             }
         });
+        await queryInterface.createTable('cars_files', {
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            type: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            file: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            car_id: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                foreignKey: true,
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                reference: {
+                    model: 'cars',
+                    as: 'car',
+                    key: 'id'
+                }
+            },
+            created_at: {
+                type: Sequelize.DATE,
+                default: Sequelize.NOW
+            }
+        });
     },
     // eslint-disable-next-line no-unused-vars
     down: async (queryInterface, Sequelize) => {
         await queryInterface.dropTable('cars');
         await queryInterface.dropTable('users');
         await queryInterface.dropTable('user_2_car');
+        await queryInterface.dropTable('cars_files');
     }
 };

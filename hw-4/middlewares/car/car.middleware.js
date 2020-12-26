@@ -1,4 +1,3 @@
-const db = require('../../dataBase').getInstance();
 const { carService } = require('../../services');
 const { ErrorHandler, errors: { CAR_NOT_REGISTERED } } = require('../../error');
 const { BAD_REQUEST } = require('../../configs/error-codes');

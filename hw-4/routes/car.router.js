@@ -15,10 +15,12 @@ carRouter.get('/:id',
     userMiddleware.checkIdValidity,
     carMiddleware.checkCarExistInBD,
     // checkAccessToken,
-    carController.findUserById);
+    carController.findCarById);
 
-carRouter.post('/',
-    carMiddleware.checkCarExistInBD,
+carRouter.post('/:id',
+    userMiddleware.checkIdValidity,
+    userMiddleware.checkUserExistInBD,
+    // checkAccessToken,
     carMiddleware.checkDataValidity,
     checkFileValidity,
     checkFileQty,

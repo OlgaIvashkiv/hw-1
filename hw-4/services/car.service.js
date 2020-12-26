@@ -33,12 +33,22 @@ module.exports = {
 
         return CarModel.create(car);
     },
-    updateSingleCarFiles: (data, carID) => {
-        const File = db.getModel(FILE);
-        return File.create(
-            { file_path: data.file_path, file_type: data.file_type, carID },
-            { where: { carID },
-                returning: true },
-        );
+    assignCarToUser: (car) => {
+        const CarModel = db.getModel('User_2_Car');
+
+        return CarModel.create(car);
     },
+    updateSingleCarFiles: (data) => {
+        const Carsfiles = db.getModel('Cars_files');
+        return Carsfiles.create(data);
+    },
+    deleteCarFiles: (car_id) => {
+        const Carsfiles = db.getModel('Cars_files');
+
+        return Carsfiles.destroy({
+            where: {
+                car_id
+            }
+        });
+    }
 };
