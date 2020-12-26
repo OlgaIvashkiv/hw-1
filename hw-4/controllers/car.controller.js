@@ -61,7 +61,7 @@ module.exports = {
         try {
             const {
                 photos,
-                documents,
+                docs,
                 body, params
             } = req;
 
@@ -79,18 +79,19 @@ module.exports = {
 
                     const file_type = TYPE_PHOTO;
                     const file_path = await path.join(photosFullPath, newPhotoName);
+                    const carFile = { type: file_type, file: file_path, car_id: params.id };
 
-                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: params.id });
+                    await carService.updateSingleCarFiles(carFile);
                 });
             }
 
-            if (documents) {
+            if (docs) {
                 const docsPathWithoutPublic = path.join('cars', `${params.id}`, 'documents');
                 const docsFullPath = path.join(process.cwd(), 'public', docsPathWithoutPublic);
 
                 await fs.mkdir(docsFullPath, { recursive: true });
 
-                documents.map(async (document) => {
+                docs.map(async (document) => {
                     const photoExtension = document.name.split('.').pop();
                     const newDocumentName = `${uuid}.${photoExtension}`;
 
@@ -117,7 +118,7 @@ module.exports = {
         try {
             const {
                 photos,
-                documents,
+                docs,
                 body, params
             } = req;
 
@@ -142,13 +143,13 @@ module.exports = {
                 });
             }
 
-            if (documents) {
+            if (docs) {
                 const docsPathWithoutPublic = path.join('cars', `${newCar.id}`, 'documents');
                 const docsFullPath = path.join(process.cwd(), 'public', docsPathWithoutPublic);
 
                 await fs.mkdir(docsFullPath, { recursive: true });
 
-                documents.map(async (document) => {
+                docs.map(async (document) => {
                     const photoExtension = document.name.split('.').pop();
                     const newDocumentName = `${uuid}.${photoExtension}`;
 

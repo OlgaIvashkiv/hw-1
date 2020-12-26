@@ -3,8 +3,9 @@ const fs = require('fs-extra').promises;
 const { Op } = require('sequelize');
 const uuid = require('uuid').v1();
 
-const { userService } = require('../services');
-const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
+const { emailService, userService } = require('../services');
+const { OK, NO_CONTENT } = require('../configs/error-codes');
+const { WELCOME, USER_BLOCKED } = require('../configs/email-actions.enum');
 const { errors: { USER_IS_UPDATED, USER_IS_DELETED } } = require('../error');
 const { hash } = require('../helpers/password.helper');
 
@@ -15,7 +16,7 @@ module.exports = {
         try {
             const {
                 avatar,
-                body: { password }
+                body: { password, email, name }
             } = req;
             const hashedPassword = await hash(password);
 
@@ -33,7 +34,8 @@ module.exports = {
 
                 await userService.updateUserById(createdUser.id, { avatar: finalPhotoPath });
             }
-            // await emailService.sendMail(email, WELCOME, { userName: name });
+
+            await emailService.sendMail(email, WELCOME, { userName: name });
 
             res.status(OK).json('User created');
         } catch (e) {
@@ -69,12 +71,15 @@ module.exports = {
     deleteUserById: async (req, res, next) => {
         try {
             const { id } = req.params;
+            const { user } = req;
 
             await userService.deleteUserById(id);
 
             const userDir = path.join(process.cwd(), 'public', 'user', `${id}`);
 
             fs.rmdir(userDir, { recursive: true });
+
+            await emailService.sendMail(user.email, USER_BLOCKED, user.name);
 
             res
                 .status(NO_CONTENT)
