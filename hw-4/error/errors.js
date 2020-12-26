@@ -24,6 +24,10 @@ module.exports = {
         message: 'User is updated successfully',
         code: CREATED
     },
+    USER_IS_CREATED: {
+        message: 'User is created successfully',
+        code: CREATED
+    },
     USER_IS_DELETED: {
         message: 'User is deleted',
         code: NO_CONTENT

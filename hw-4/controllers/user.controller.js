@@ -4,9 +4,9 @@ const { Op } = require('sequelize');
 const uuid = require('uuid').v1();
 
 const { emailService, userService } = require('../services');
-const { OK, NO_CONTENT } = require('../configs/error-codes');
+const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
 const { WELCOME, USER_BLOCKED } = require('../configs/email-actions.enum');
-const { errors: { USER_IS_UPDATED, USER_IS_DELETED } } = require('../error');
+const { errors: { USER_IS_UPDATED, USER_IS_DELETED, USER_IS_CREATED } } = require('../error');
 const { hash } = require('../helpers/password.helper');
 
 const db = require('../dataBase').getInstance();
@@ -34,10 +34,9 @@ module.exports = {
 
                 await userService.updateUserById(createdUser.id, { avatar: finalPhotoPath });
             }
-
             await emailService.sendMail(email, WELCOME, { userName: name });
 
-            res.status(OK).json('User created');
+            res.status(CREATED).json(USER_IS_CREATED.message);
         } catch (e) {
             next(e);
         }
