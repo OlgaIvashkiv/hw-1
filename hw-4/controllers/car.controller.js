@@ -6,6 +6,7 @@ const { carService } = require('../services');
 const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
 const { errors: { CAR_IS_UPDATED, CAR_IS_DELETED } } = require('../error');
 const { TYPE_DOC, TYPE_PHOTO } = require('../configs/constants');
+const { transactionInstance } = require('../dataBase').getInstance();
 
 module.exports = {
     getAllCars: async (req, res, next) => {
@@ -115,6 +116,7 @@ module.exports = {
         }
     },
     createNewCar: async (req, res, next) => {
+        const transaction = await transactionInstance();
         try {
             const {
                 photos,
@@ -122,7 +124,7 @@ module.exports = {
                 body, params
             } = req;
 
-            const newCar = await carService.createCar(body);
+            const newCar = await carService.createCar(body, transaction);
 
             if (photos) {
                 const photosPathWithoutPublic = path.join('cars', `${newCar.id}`, 'photos');
@@ -139,7 +141,7 @@ module.exports = {
                     const file_type = TYPE_PHOTO;
                     const file_path = await path.join(photosFullPath, newPhotoName);
 
-                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: newCar.id });
+                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: newCar.id }, transaction);
                 });
             }
 
@@ -158,7 +160,7 @@ module.exports = {
                     const file_type = TYPE_DOC;
                     const file_path = await path.join(docsFullPath, newDocumentName);
 
-                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: newCar.id });
+                    await carService.updateSingleCarFiles({ type: file_type, file: file_path, car_id: newCar.id }, transaction);
                 });
             }
             const user2Car = { user_id: params.id, car_id: newCar.id };

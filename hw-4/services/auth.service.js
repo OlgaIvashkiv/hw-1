@@ -1,3 +1,4 @@
+// const { Op } = require('sequelize');
 const db = require('../dataBase').getInstance();
 
 module.exports = {
@@ -32,11 +33,34 @@ module.exports = {
             where: { access_token: accessToken }
         });
     },
+    getUserIdWithToken: (accessToken) => {
+        const OAuthModel = db.getModel('O_Auth');
+
+        return OAuthModel.findOne({
+            where: { access_token: accessToken }
+        });
+    },
     deleteTokenById: (id) => {
         const OAuthModel = db.getModel('O_Auth');
 
         return OAuthModel.destroy({
             where: { id }
+        });
+    },
+    removeExpiredRefreshTokens: (tokens) => {
+        const OAuthModel = db.getModel('O_Auth');
+
+        // return OAuthModel.destroy({
+        //     where: {
+        //         created_at: {
+        //             [Op.gt]: new Date(new Date() - 24 * 60 * 60 * 30)
+        //         }
+        //     }
+        // });
+        return OAuthModel.destroy({
+            where: {
+                tokens
+            }
         });
     }
 };

@@ -20,7 +20,7 @@ userRouter.get('/:id',
 userRouter.delete('/:id',
     userMiddleware.checkIdValidity,
     userMiddleware.checkUserExistInBD,
-    checkAccessToken,
+    // checkAccessToken,
     userController.deleteUserById);
 
 userRouter.put('/:id',

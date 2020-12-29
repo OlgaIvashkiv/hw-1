@@ -22,7 +22,7 @@ module.exports = (client, DataTypes) => {
             },
             created_at: {
                 type: DataTypes.DATE,
-                default: DataTypes.NOW
+                default: client.fn('NOW')
             }
         },
         {

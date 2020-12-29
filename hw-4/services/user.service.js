@@ -11,9 +11,9 @@ module.exports = {
 
         return UserModel.findAll();
     },
-    addUserToDB: (user) => {
+    addUserToDB: (user, transaction) => {
         const UserModel = db.getModel('User');
-        return UserModel.create(user);
+        return UserModel.create(user, { transaction });
     },
     deleteUserById: (id) => {
         const UserModel = db.getModel('User');
@@ -23,12 +23,15 @@ module.exports = {
             }
         });
     },
-    updateUserById: (id, updatedData) => {
+    updateUserById: (id, updatedData, transaction) => {
         const UserModel = db.getModel('User');
 
         return UserModel.update(
             { ...updatedData },
-            { where: { id } }
+            {
+                where: { id },
+                transaction
+            }
         );
     },
 

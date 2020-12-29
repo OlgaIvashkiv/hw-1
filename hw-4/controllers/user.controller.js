@@ -3,16 +3,19 @@ const fs = require('fs-extra').promises;
 const { Op } = require('sequelize');
 const uuid = require('uuid').v1();
 
-const { emailService, userService } = require('../services');
+const { emailService, logService, userService } = require('../services');
 const { OK, NO_CONTENT, CREATED } = require('../configs/error-codes');
 const { WELCOME, USER_BLOCKED } = require('../configs/email-actions.enum');
+const { USER_REGISTERED, USER_UPDATED, USER_DELETED } = require('../configs/logs-actions.enum');
 const { errors: { USER_IS_UPDATED, USER_IS_DELETED, USER_IS_CREATED } } = require('../error');
 const { hash } = require('../helpers/password.helper');
+const { transactionInstance } = require('../dataBase').getInstance();
 
 const db = require('../dataBase').getInstance();
 
 module.exports = {
     createUser: async (req, res, next) => {
+        const transaction = await transactionInstance();
         try {
             const {
                 avatar,
@@ -20,7 +23,7 @@ module.exports = {
             } = req;
             const hashedPassword = await hash(password);
 
-            const createdUser = await userService.addUserToDB({ ...req.body, password: hashedPassword });
+            const createdUser = await userService.addUserToDB({ ...req.body, password: hashedPassword }, transaction);
 
             if (avatar) {
                 const pathWithoutPublic = path.join('user', `${createdUser.id}`, 'photos');
@@ -32,12 +35,16 @@ module.exports = {
                 await fs.mkdir(photoDir, { recursive: true });
                 await avatar.mv(path.join(photoDir, photoName));
 
-                await userService.updateUserById(createdUser.id, { avatar: finalPhotoPath });
+                await userService.updateUserById(createdUser.id, { avatar: finalPhotoPath }, transaction);
             }
             await emailService.sendMail(email, WELCOME, { userName: name });
+            await transaction.commit();
+
+            await logService.createLogs({ user_id: createdUser.id, action: USER_REGISTERED });
 
             res.status(CREATED).json(USER_IS_CREATED.message);
         } catch (e) {
+            await transaction.rollback();
             next(e);
         }
     },
@@ -79,6 +86,8 @@ module.exports = {
             fs.rmdir(userDir, { recursive: true });
 
             await emailService.sendMail(user.email, USER_BLOCKED, user.name);
+
+            await logService.createLogs({ user_id: id, action: USER_DELETED });
 
             res
                 .status(NO_CONTENT)
@@ -130,6 +139,8 @@ module.exports = {
             req.user.password = await hash(password);
 
             await userService.updateUserById(params.id, req.user);
+
+            await logService.createLogs({ user_id: params.id, action: USER_UPDATED });
 
             res.status(OK).json(USER_IS_UPDATED.message);
         } catch (e) {
