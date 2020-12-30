@@ -1,5 +1,6 @@
-// const { Op } = require('sequelize');
+const { Op } = require('sequelize');
 const db = require('../dataBase').getInstance();
+const { CHECK_REFRESH_TOKEN_TIME } = require('../configs/constants');
 
 module.exports = {
     findUserByEmail: (email) => {
@@ -47,19 +48,14 @@ module.exports = {
             where: { id }
         });
     },
-    removeExpiredRefreshTokens: (tokens) => {
+    removeExpiredRefreshTokens: () => {
         const OAuthModel = db.getModel('O_Auth');
 
-        // return OAuthModel.destroy({
-        //     where: {
-        //         created_at: {
-        //             [Op.gt]: new Date(new Date() - 24 * 60 * 60 * 30)
-        //         }
-        //     }
-        // });
         return OAuthModel.destroy({
             where: {
-                tokens
+                created_at: {
+                    [Op.gt]: new Date(new Date() - CHECK_REFRESH_TOKEN_TIME)
+                }
             }
         });
     }

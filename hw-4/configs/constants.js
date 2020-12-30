@@ -2,7 +2,9 @@ module.exports = {
     ACCESS_TOKEN_EXPIRE_TIME: '30m',
     REFRESH_TOKEN_EXPIRE_TIME: '30d',
 
-    CHECK_REFRESH_TOKEN_TIME: Date.now() + 30,
+    CHECK_REFRESH_TOKEN_TIME: (24 * 60 * 60 * 1000 * 30),
+
+    CRONE_TIME: '0 0 * * *',
 
     AUTHORIZATION: 'Authorization',
     MIN_CAR_YEAR: 1980,

@@ -86,7 +86,6 @@ module.exports = {
             fs.rmdir(userDir, { recursive: true });
 
             await emailService.sendMail(user.email, USER_BLOCKED, user.name);
-
             await logService.createLogs({ user_id: id, action: USER_DELETED });
 
             res
